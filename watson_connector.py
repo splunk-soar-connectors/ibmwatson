@@ -31,7 +31,7 @@ class WatsonConnector(BaseConnector):
         # Variable to hold a base_url in case the app makes REST calls
         # Do note that the app json defines the asset config, so please
         # modify this as you deem fit.
-        self._base_url = None
+        self._base_url = "https://gateway.watsonplatform.net/language-translator/api/"
 
     def _process_empty_reponse(self, response, action_result):
 
@@ -110,7 +110,7 @@ class WatsonConnector(BaseConnector):
 
         return RetVal(action_result.set_status(phantom.APP_ERROR, message), None)
 
-    def _make_rest_call(self, endpoint, action_result, headers=None, params=None, data=None, method="get"):
+    def _make_rest_call(self, endpoint, action_result, headers=None, params=None, json=None, method="get"):
 
         config = self.get_config()
 
@@ -127,8 +127,8 @@ class WatsonConnector(BaseConnector):
         try:
             r = request_func(
                             url,
-                            auth=("REPLACE ME: Replace with auth credentials"),
-                            json=data,
+                            auth=(self._username, self._password),
+                            json=json,
                             headers=headers,
                             verify=config.get('verify_server_cert', False),
                             params=params)
@@ -142,15 +142,9 @@ class WatsonConnector(BaseConnector):
         # Add an action result object to self (BaseConnector) to represent the action for this param
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        # NOTE: test connectivity does _NOT_ take any parameters
-        # i.e. the param dictionary passed to this handler will be empty.
-        # Also typically it does not add any data into an action_result either.
-        # The status and progress messages are more important.
-
-        """
-        # self.save_progress("Connecting to endpoint")
+        self.save_progress("Connecting to watson language translator")
         # make rest call
-        ret_val, response = self._make_rest_call('/endpoint', action_result, params=None, headers=None)
+        ret_val, response = self._make_rest_call('v2/identifiable_languages', action_result)
 
         if (phantom.is_fail(ret_val)):
             # the call to the 3rd party device or service failed, action result should contain all the error details
@@ -159,15 +153,10 @@ class WatsonConnector(BaseConnector):
             return action_result.get_status()
 
         # Return success
-        # self.save_progress("Test Connectivity Passed")
-        # return action_result.set_status(phantom.APP_SUCCESS)
-        """
+        self.save_progress("Test Connectivity Passed")
+        return action_result.set_status(phantom.APP_SUCCESS)
 
-        # For now return Error with a message, in case of success we don't set the message, but use the summary
-        self.save_progress("Test Connectivity Failed, action not yet implemented")
-        return action_result.set_status(phantom.APP_ERROR, "Action not yet implemented")
-
-    def _handle_text_to_speach(self, param):
+    def _handle_get_language(self, param):
 
         # Implement the handler here
         # use self.save_progress(...) to send progress messages back to the platform
@@ -176,45 +165,23 @@ class WatsonConnector(BaseConnector):
         # Add an action result object to self (BaseConnector) to represent the action for this param
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        """
-        # Access action parameters passed in the 'param' dictionary
 
         # Required values can be accessed directly
-        required_parameter = param['required_parameter']
+        text = param['text']
 
-        # Optional values should use the .get() function
-        optional_parameter = param.get('optional_parameter', 'default_value')
-        """
-
-        """
         # make rest call
-        ret_val, response = self._make_rest_call('/endpoint', action_result, params=None, headers=None)
+        ret_val, response = self._make_rest_call('v2/identify', action_result, method='post',
+                                                 headers={"content-type": "text/plain", "accept": "application/json"},
+                                                 json={"text":text})
 
         if (phantom.is_fail(ret_val)):
-            # the call to the 3rd party device or service failed, action result should contain all the error details
-            # so just return from here
             return action_result.get_status()
 
-        # Now post process the data,  uncomment code as you deem fit
+        action_result.add_data(response)
 
-        # Add the response into the data section
-        # action_result.add_data(response)
-        """
+        return action_result.set_status(phantom.APP_SUCCESS)
 
-        action_result.add_data({})
-
-        # Add a dictionary that is made up of the most important values from data into the summary
-        summary = action_result.update_summary({})
-        summary['important_data'] = "value"
-
-        # Return success, no need to set the message, only the status
-        # BaseConnector will create a textual message based off of the summary dictionary
-        # return action_result.set_status(phantom.APP_SUCCESS)
-
-        # For now return Error with a message, in case of success we don't set the message, but use the summary
-        return action_result.set_status(phantom.APP_ERROR, "Action not yet implemented")
-
-    def _handle_identify_language(self, param):
+    def _handle_list_languages(self, param):
 
         # Implement the handler here
         # use self.save_progress(...) to send progress messages back to the platform
@@ -223,137 +190,45 @@ class WatsonConnector(BaseConnector):
         # Add an action result object to self (BaseConnector) to represent the action for this param
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        """
-        # Access action parameters passed in the 'param' dictionary
-
-        # Required values can be accessed directly
-        required_parameter = param['required_parameter']
-
-        # Optional values should use the .get() function
-        optional_parameter = param.get('optional_parameter', 'default_value')
-        """
-
-        """
         # make rest call
-        ret_val, response = self._make_rest_call('/endpoint', action_result, params=None, headers=None)
+        ret_val, response = self._make_rest_call('v2/identifiable_languages', action_result)
 
         if (phantom.is_fail(ret_val)):
-            # the call to the 3rd party device or service failed, action result should contain all the error details
-            # so just return from here
             return action_result.get_status()
 
-        # Now post process the data,  uncomment code as you deem fit
+        action_result.add_data(response)
 
-        # Add the response into the data section
-        # action_result.add_data(response)
-        """
-
-        action_result.add_data({})
-
-        # Add a dictionary that is made up of the most important values from data into the summary
-        summary = action_result.update_summary({})
-        summary['important_data'] = "value"
-
-        # Return success, no need to set the message, only the status
-        # BaseConnector will create a textual message based off of the summary dictionary
-        # return action_result.set_status(phantom.APP_SUCCESS)
-
-        # For now return Error with a message, in case of success we don't set the message, but use the summary
-        return action_result.set_status(phantom.APP_ERROR, "Action not yet implemented")
-
-    def _handle_get_languages(self, param):
-
-        # Implement the handler here
-        # use self.save_progress(...) to send progress messages back to the platform
-        self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
-
-        # Add an action result object to self (BaseConnector) to represent the action for this param
-        action_result = self.add_action_result(ActionResult(dict(param)))
-
-        """
-        # Access action parameters passed in the 'param' dictionary
-
-        # Required values can be accessed directly
-        required_parameter = param['required_parameter']
-
-        # Optional values should use the .get() function
-        optional_parameter = param.get('optional_parameter', 'default_value')
-        """
-
-        """
-        # make rest call
-        ret_val, response = self._make_rest_call('/endpoint', action_result, params=None, headers=None)
-
-        if (phantom.is_fail(ret_val)):
-            # the call to the 3rd party device or service failed, action result should contain all the error details
-            # so just return from here
-            return action_result.get_status()
-
-        # Now post process the data,  uncomment code as you deem fit
-
-        # Add the response into the data section
-        # action_result.add_data(response)
-        """
-
-        action_result.add_data({})
-
-        # Add a dictionary that is made up of the most important values from data into the summary
-        summary = action_result.update_summary({})
-        summary['important_data'] = "value"
-
-        # Return success, no need to set the message, only the status
-        # BaseConnector will create a textual message based off of the summary dictionary
-        # return action_result.set_status(phantom.APP_SUCCESS)
-
-        # For now return Error with a message, in case of success we don't set the message, but use the summary
-        return action_result.set_status(phantom.APP_ERROR, "Action not yet implemented")
+        return action_result.set_status(phantom.APP_SUCCESS)
 
     def _handle_translate_text(self, param):
 
-        # Implement the handler here
         # use self.save_progress(...) to send progress messages back to the platform
         self.save_progress("In action handler for: {0}".format(self.get_action_identifier()))
 
         # Add an action result object to self (BaseConnector) to represent the action for this param
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-        """
-        # Access action parameters passed in the 'param' dictionary
+       # Required values can be accessed directly
+        source = param['source']
+        target = param['target']
+        text = param['text']
 
-        # Required values can be accessed directly
-        required_parameter = param['required_parameter']
-
-        # Optional values should use the .get() function
-        optional_parameter = param.get('optional_parameter', 'default_value')
-        """
-
-        """
         # make rest call
-        ret_val, response = self._make_rest_call('/endpoint', action_result, params=None, headers=None)
+        ret_val, response = self._make_rest_call('v2/translate', action_result,
+                                                 headers={"accept": "application/json"},
+                                                 json={"text":text,"source":source,"target":target}, method='post')
 
         if (phantom.is_fail(ret_val)):
-            # the call to the 3rd party device or service failed, action result should contain all the error details
-            # so just return from here
             return action_result.get_status()
 
-        # Now post process the data,  uncomment code as you deem fit
-
         # Add the response into the data section
-        # action_result.add_data(response)
-        """
-
-        action_result.add_data({})
+        action_result.add_data(response)
 
         # Add a dictionary that is made up of the most important values from data into the summary
-        summary = action_result.update_summary({})
-        summary['important_data'] = "value"
+        # summary = action_result.update_summary({})
+        # summary['important_data'] = "value"
 
-        # Return success, no need to set the message, only the status
-        # BaseConnector will create a textual message based off of the summary dictionary
-        # return action_result.set_status(phantom.APP_SUCCESS)
-
-        # For now return Error with a message, in case of success we don't set the message, but use the summary
-        return action_result.set_status(phantom.APP_ERROR, "Action not yet implemented")
+        return action_result.set_status(phantom.APP_SUCCESS)
 
     def handle_action(self, param):
 
@@ -367,14 +242,11 @@ class WatsonConnector(BaseConnector):
         if action_id == 'test_connectivity':
             ret_val = self._handle_test_connectivity(param)
 
-        elif action_id == 'text_to_speach':
-            ret_val = self._handle_text_to_speach(param)
+        elif action_id == 'get_language':
+            ret_val = self._handle_get_language(param)
 
-        elif action_id == 'identify_language':
-            ret_val = self._handle_identify_language(param)
-
-        elif action_id == 'get_languages':
-            ret_val = self._handle_get_languages(param)
+        elif action_id == 'list_languages':
+            ret_val = self._handle_list_languages(param)
 
         elif action_id == 'translate_text':
             ret_val = self._handle_translate_text(param)
@@ -387,18 +259,18 @@ class WatsonConnector(BaseConnector):
         # that needs to be accessed across actions
         self._state = self.load_state()
 
-        """
+
         # get the asset config
         config = self.get_config()
 
         # Access values in asset config by the name
 
         # Required values can be accessed directly
-        required_config_name = config['required_config_name']
-
+        self._username = config['username']
+        self._password = config['password']
         # Optional values should use the .get() function
         optional_config_name = config.get('optional_config_name')
-        """
+
 
         return phantom.APP_SUCCESS
 

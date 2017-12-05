@@ -1,7 +1,7 @@
 {
     "appid": "f98ffb04-0dfe-4da3-81dd-38ae99da7758",
-    "name": "Watson",
-    "description": "Leverage IBM Watson for a variety of actions",
+    "name": "Watson - Language Translator",
+    "description": "Leverage IBM Watson for language translation",
     "type": "information",
     "product_vendor": "IBM",
     "logo": "watson.png",
@@ -16,7 +16,7 @@
     "min_phantom_version": "3.0.265",
     "app_wizard_version": "1.0.0",
     "configuration": {
-        "Username": {
+        "username": {
             "description": "Watson Username",
             "data_type": "string",
             "required": true,
@@ -24,7 +24,7 @@
             "default": "",
             "order": 0
         },
-        "Password": {
+        "password": {
             "description": "Watson Password",
             "data_type": "password",
             "required": true,
@@ -46,93 +46,8 @@
             "versions": "EQ(*)"
         },
         {
-            "action": "text to speach",
-            "identifier": "text_to_speach",
-            "description": "takes given text and returns an audio file",
-            "verbose": "",
-            "type": "generic",
-            "read_only": false,
-            "parameters": {
-                "text": {
-                    "description": "Text to convert into audio",
-                    "data_type": "string",
-                    "required": true,
-                    "primary": false,
-                    "contains": [],
-                    "value_list": [],
-                    "default": "",
-                    "order": 0
-                },
-                "voice": {
-                    "description": "Voice to use for audio",
-                    "data_type": "string",
-                    "required": true,
-                    "primary": false,
-                    "contains": [],
-                    "value_list": [],
-                    "default": "",
-                    "order": 1
-                },
-                "file type": {
-                    "description": "File type for audio",
-                    "data_type": "string",
-                    "required": true,
-                    "primary": false,
-                    "contains": [],
-                    "value_list": [],
-                    "default": "",
-                    "order": 2
-                }
-            },
-            "output": [
-                {
-                    "data_path": "action_result.parameter.text",
-                    "data_type": "string",
-                    "contains": [],
-                    "column_name": "text",
-                    "column_order": 0
-                },
-                {
-                    "data_path": "action_result.parameter.voice",
-                    "data_type": "string",
-                    "contains": [],
-                    "column_name": "voice",
-                    "column_order": 1
-                },
-                {
-                    "data_path": "action_result.parameter.file type",
-                    "data_type": "string",
-                    "contains": [],
-                    "column_name": "file type",
-                    "column_order": 2
-                },
-                {
-                    "data_path": "action_result.status",
-                    "data_type": "string",
-                    "column_name": "status",
-                    "column_order": 3
-                },
-                {
-                    "data_path": "action_result.message",
-                    "data_type": "string"
-                },
-                {
-                    "data_path": "summary.total_objects",
-                    "data_type": "numeric"
-                },
-                {
-                    "data_path": "summary.total_objects_successful",
-                    "data_type": "numeric"
-                }
-            ],
-            "render": {
-                "type": "table"
-            },
-            "versions": "EQ(*)"
-        },
-        {
-            "action": "identify language",
-            "identifier": "identify_language",
+            "action": "get language",
+            "identifier": "get_language",
             "description": "Identifies the language of a given body of text",
             "verbose": "",
             "type": "generic",
@@ -182,8 +97,8 @@
             "versions": "EQ(*)"
         },
         {
-            "action": "get languages",
-            "identifier": "get_languages",
+            "action": "list languages",
+            "identifier": "list_languages",
             "description": "List languages that can be used for translation",
             "verbose": "",
             "type": "generic",
