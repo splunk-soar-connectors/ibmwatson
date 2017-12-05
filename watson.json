@@ -173,6 +173,9 @@
                 {
                     "data_path": "action_result.data.*.languages.*.language",
                     "data_type": "string",
+                    "contains":[
+                        "language"
+                    ],
                     "example_values": [
                         "af"
                     ]
@@ -192,7 +195,7 @@
             "read_only": true,
             "parameters": {
                 "source": {
-                    "description": "source language",
+                    "description": "Source language",
                     "data_type": "string",
                     "required": true,
                     "primary": false,
@@ -204,7 +207,7 @@
                     "order": 0
                 },
                 "target": {
-                    "description": "target language",
+                    "description": "Target language",
                     "data_type": "string",
                     "required": true,
                     "primary": false,
