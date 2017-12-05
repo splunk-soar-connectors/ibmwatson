@@ -272,14 +272,8 @@ class WatsonConnector(BaseConnector):
         # get the asset config
         config = self.get_config()
 
-        # Access values in asset config by the name
-
-        # Required values can be accessed directly
         self._username = config['username']
         self._password = config['password']
-        # Optional values should use the .get() function
-        optional_config_name = config.get('optional_config_name')
-
 
         return phantom.APP_SUCCESS
 

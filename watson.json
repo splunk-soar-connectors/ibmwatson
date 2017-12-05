@@ -20,7 +20,6 @@
             "description": "Watson Username",
             "data_type": "string",
             "required": true,
-            "value_list": [],
             "default": "",
             "order": 0
         },
@@ -28,7 +27,6 @@
             "description": "Watson Password",
             "data_type": "password",
             "required": true,
-            "value_list": [],
             "default": "",
             "order": 1
         }
