@@ -185,7 +185,19 @@ class WatsonConnector(BaseConnector):
         if (phantom.is_fail(ret_val)):
             return action_result.get_status()
 
-        action_result.add_data(response)
+        languages = response.get('languages')
+
+        if (type(languages) != list):
+            languages = [languages]
+
+        for curr_item in languages:
+            action_result.add_data(curr_item)
+
+        action_result.update_summary({'total_languages': action_result.get_data_size()})
+        try:
+            action_result.update_summary({'high_confidence_match': languages[0]['language']})
+        except:
+            pass
 
         return action_result.set_status(phantom.APP_SUCCESS)
 

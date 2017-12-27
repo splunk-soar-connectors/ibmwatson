@@ -54,7 +54,7 @@
                     "description": "text to identify",
                     "data_type": "string",
                     "required": true,
-                    "primary": false,
+                    "primary": true,
                     "order": 0
                 }
             },
@@ -62,8 +62,6 @@
                 {
                     "data_path": "action_result.status",
                     "data_type": "string",
-                    "column_name": "status",
-                    "column_order": 1,
                     "example_values": [
                         "success"
                     ]
@@ -71,10 +69,30 @@
                 {
                     "data_path": "action_result.parameter.text",
                     "data_type": "string",
-                    "column_name": "text",
-                    "column_order": 0,
                     "example_values": [
-                        "Il s'agit d'un nouveau test"
+                        "Il s'agit d'un nouveau test",
+                        "Bonjour comment allez-vous"
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.confidence",
+                    "data_type": "numeric",
+                    "column_name": "Confidence",
+                    "column_order": 1,
+                    "example_values": [
+                        0.836794
+                    ]
+                },
+                {
+                    "data_path": "action_result.data.*.language",
+                    "data_type": "string",
+                    "column_name": "Language",
+                    "column_order": 0,
+                    "contains": [
+                        "language"
+                    ],
+                    "example_values": [
+                        "fr"
                     ]
                 },
                 {
@@ -92,10 +110,28 @@
                     ]
                 },
                 {
+                    "data_path": "action_result.summary.high_confidence_match",
+                    "data_type": "string",
+                    "contains": [
+                        "language"
+                    ],
+                    "example_values": [
+                        "fr"
+                    ]
+                },
+                {
+                    "data_path": "action_result.summary.total_languages",
+                    "data_type": "numeric",
+                    "example_values": [
+                        62
+                    ]
+                },
+                {
                     "data_path": "action_result.message",
                     "data_type": "string",
                     "example_values": [
-                        ""
+                        "",
+                        "High confidence match: fr, Total languages: 62"
                     ]
                 },
                 {
@@ -139,6 +175,9 @@
                     "data_type": "string",
                     "column_name": "Language",
                     "column_order": 1,
+                    "contains": [
+                        "language"
+                    ],
                     "example_values": [
                         "fr"
                     ]
