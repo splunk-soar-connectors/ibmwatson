@@ -158,7 +158,7 @@ class WatsonConnector(BaseConnector):
         if (phantom.is_fail(ret_val)):
             # the call to the 3rd party device or service failed, action result should contain all the error details
             # so just return from here
-            self.save_progress("Test Connectivity Failed. Error: {0}".format(action_result.get_message()))
+            self.save_progress("Test Connectivity Failed")
             return action_result.get_status()
 
         # Return success
@@ -174,14 +174,13 @@ class WatsonConnector(BaseConnector):
         # Add an action result object to self (BaseConnector) to represent the action for this param
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-
         # Required values can be accessed directly
         text = param['text']
 
         # make rest call
         ret_val, response = self._make_rest_call('v2/identify', action_result, method='post',
                                                  headers={"content-type": "text/plain", "accept": "application/json"},
-                                                 json={"text":text})
+                                                 json={"text": text})
 
         if (phantom.is_fail(ret_val)):
             return action_result.get_status()
@@ -205,7 +204,38 @@ class WatsonConnector(BaseConnector):
         if (phantom.is_fail(ret_val)):
             return action_result.get_status()
 
-        action_result.add_data(response)
+        languages = response.get('languages')
+
+        if (type(languages) != list):
+            languages = [languages]
+
+        for curr_item in languages:
+            action_result.add_data(curr_item)
+
+        action_result.update_summary({'total_languages': action_result.get_data_size()})
+
+        return action_result.set_status(phantom.APP_SUCCESS)
+
+    def _handle_list_translations(self, param):
+
+        # Add an action result object to self (BaseConnector) to represent the action for this param
+        action_result = self.add_action_result(ActionResult(dict(param)))
+
+        # make rest call
+        ret_val, response = self._make_rest_call('v2/models', action_result)
+
+        if (phantom.is_fail(ret_val)):
+            return action_result.get_status()
+
+        models = response.get('models')
+
+        if (type(models) != list):
+            models = [models]
+
+        for curr_item in models:
+            action_result.add_data(curr_item)
+
+        action_result.update_summary({'total_models': action_result.get_data_size()})
 
         return action_result.set_status(phantom.APP_SUCCESS)
 
@@ -217,15 +247,14 @@ class WatsonConnector(BaseConnector):
         # Add an action result object to self (BaseConnector) to represent the action for this param
         action_result = self.add_action_result(ActionResult(dict(param)))
 
-       # Required values can be accessed directly
-        source = param['source']
-        target = param['target']
-        text = param['text']
+        if ('model_id' not in param):
+            if (('source' not in param) or ('target' not in param)):
+                return action_result.set_status(phantom.APP_ERROR, "Please specify either model_id or source and target to use")
 
         # make rest call
         ret_val, response = self._make_rest_call('v2/translate', action_result,
                                                  headers={"accept": "application/json"},
-                                                 json={"text":text,"source":source,"target":target}, method='post')
+                                                 json=param, method='post')
 
         if (phantom.is_fail(ret_val)):
             return action_result.get_status()
@@ -257,6 +286,9 @@ class WatsonConnector(BaseConnector):
         elif action_id == 'list_languages':
             ret_val = self._handle_list_languages(param)
 
+        elif action_id == 'list_translations':
+            ret_val = self._handle_list_translations(param)
+
         elif action_id == 'translate_text':
             ret_val = self._handle_translate_text(param)
 
@@ -267,7 +299,6 @@ class WatsonConnector(BaseConnector):
         # Load the state in initialize, use it to store data
         # that needs to be accessed across actions
         self._state = self.load_state()
-
 
         # get the asset config
         config = self.get_config()
